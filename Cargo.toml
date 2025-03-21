@@ -2,5 +2,10 @@
 name = "speedtest-exporter"
 version = "0.1.0"
 edition = "2024"
+authors = ["Ben Prize Bar-On <prizeben@gmail.com>"]
+
+keywords       = ["prometheus", "exporter"]
 
 [dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
