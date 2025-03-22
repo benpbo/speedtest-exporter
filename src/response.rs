@@ -1,10 +1,11 @@
+use chrono::{self, DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub enum Response {
     Result {
-        timestamp: String,
+        timestamp: DateTime<Utc>,
         ping: Ping,
         download: Download,
         upload: Upload,
@@ -28,12 +29,12 @@ pub struct Download {
     pub bandwidth: i64,
     pub bytes: i64,
     pub elapsed: i64,
-    pub latency: Latency,
+    pub latency: DownloadLatency,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Latency {
+pub struct DownloadLatency {
     pub iqm: f64,
     pub low: f64,
     pub high: f64,
@@ -46,12 +47,12 @@ pub struct Upload {
     pub bandwidth: i64,
     pub bytes: i64,
     pub elapsed: i64,
-    pub latency: Latency2,
+    pub latency: UploadLatency,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Latency2 {
+pub struct UploadLatency {
     pub iqm: f64,
     pub low: f64,
     pub high: f64,
