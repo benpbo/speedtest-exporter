@@ -13,3 +13,7 @@ This project is currently in its early stages. The primary functionality has bee
 - **Feature Enhancements**: Add more detailed metrics and support for additional configurations.
 - **Improved Documentation**: Provide comprehensive guides and examples for users.
 - **Community Contributions**: Encourage contributions from the community to help improve and expand the project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
