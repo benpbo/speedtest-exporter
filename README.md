@@ -1,4 +1,4 @@
-# Speedtest Exporter
+# Speedtest Exporter &emsp; [![Rust](https://github.com/benpbo/speedtest-exporter/actions/workflows/rust.yml/badge.svg)](https://github.com/benpbo/speedtest-exporter/actions/workflows/rust.yml)
 
 ## Introduction
 
