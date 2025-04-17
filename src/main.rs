@@ -7,6 +7,7 @@ use prometheus_exporter_base::{
     render_prometheus,
 };
 use response::Response;
+use tokio_util::sync::CancellationToken;
 
 mod render;
 mod response;
@@ -33,22 +34,37 @@ fn perform_request() -> Result<String, RequestError> {
 async fn main() {
     env_logger::init();
 
+    let token = CancellationToken::new();
+    let shutdown_token = token.clone();
+    tokio::spawn(async move {
+        if let Err(error) = tokio::signal::ctrl_c().await {
+            error!("Failed to listen for shutdown signal {error}");
+            shutdown_token.cancel();
+            return;
+        }
+
+        info!("Received shutdown signal. Shutting down...");
+        shutdown_token.cancel();
+    });
+
     let addr: SocketAddr = ([0, 0, 0, 0], 9798).into();
     let server_options = ServerOptions {
         addr,
         authorization: Authorization::None,
     };
 
-    render_prometheus(server_options, (), |_request, _options| async {
-        match perform_request() {
-            Ok(result) => Ok(result),
-            Err(error) => {
-                error!("{error}");
-                Err(Box::new(error).into())
+    tokio::select! {
+        _ = token.cancelled() => {}
+        _ = render_prometheus(server_options, (), |_request, _options| async {
+            match perform_request() {
+                Ok(result) => Ok(result),
+                Err(error) => {
+                    error!("{error}");
+                    Err(Box::new(error).into())
+                }
             }
-        }
-    })
-    .await;
+        }) => {}
+    }
 }
 
 #[derive(Debug)]
