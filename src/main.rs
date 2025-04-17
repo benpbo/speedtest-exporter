@@ -1,5 +1,5 @@
 use core::str;
-use std::{net::SocketAddr, process::Command};
+use std::net::SocketAddr;
 
 use log::{debug, error, info};
 use prometheus_exporter_base::{
@@ -7,18 +7,20 @@ use prometheus_exporter_base::{
     render_prometheus,
 };
 use response::Response;
+use tokio::process::Command;
 use tokio_util::sync::CancellationToken;
 
 mod render;
 mod response;
 
-fn perform_request() -> Result<String, RequestError> {
+async fn perform_request() -> Result<String, RequestError> {
     info!("Running speedtest");
     let stdout = Command::new("speedtest")
         .arg("--format=json")
         .arg("--accept-license")
         .arg("--accept-gdpr")
         .output()
+        .await
         .map_err(RequestError::Command)?
         .stdout;
 
@@ -56,7 +58,7 @@ async fn main() {
     tokio::select! {
         _ = token.cancelled() => {}
         _ = render_prometheus(server_options, (), |_request, _options| async {
-            match perform_request() {
+            match perform_request().await {
                 Ok(result) => Ok(result),
                 Err(error) => {
                     error!("{error}");
